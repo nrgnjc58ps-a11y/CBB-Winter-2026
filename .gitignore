@@ -1,0 +1,4 @@
+# Readable itinerary and source PDFs never go in the repo
+private/
+*.pdf
+node_modules/
