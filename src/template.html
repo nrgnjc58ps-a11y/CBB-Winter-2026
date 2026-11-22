@@ -373,7 +373,7 @@ function renderDay(i){
     const f = day.flight;
     const from = prev && prev.hotel ? placeStr(prev.hotel.name, prev.hotel, prev.country) : null;
     out.push(`<div class="card"><h2>${I.plane}Flight home</h2>
-      <div class="route">DUS <span class="arrow">→</span> MAN</div>
+      <div class="route">${esc(f.fromCode || "")} <span class="arrow">→</span> ${esc(f.toCode || f.to)}</div>
       <div class="travel-grid">
         <div class="stat"><div class="k">Departs</div><div class="v">${esc(f.dep)}</div></div>
         <div class="stat" style="grid-column:span 2"><div class="k">From</div><div class="v" style="white-space:normal;font-size:15px">${esc(f.from)}</div></div>
@@ -520,7 +520,7 @@ function renderAll(){
     const cls = ["ov-item", d.date < t ? "past" : "", d.date === t ? "today" : ""].join(" ");
     return `<div class="${cls}" data-go="${i}">
       <div class="od"><div class="dw">${fmt(d.date,{weekday:"short"})}</div><div class="dn">${fmt(d.date,{day:"numeric"})}</div><div class="dm">${fmt(d.date,{month:"short"})}</div></div>
-      <div><div class="oc">${esc(d.type === "home" ? "Flight home" : d.city)}</div><div class="ov">${d.venue ? esc(d.venue.name) + " · " + esc(d.country) : d.flight ? "Flight " + esc(d.flight.from.replace(/ \(.*\)/,"")) + " → Manchester" : "Arrival · no show"}${d.next ? ` · then ${esc(d.next.distance)}` : ""}</div></div>
+      <div><div class="oc">${esc(d.type === "home" ? "Flight home" : d.city)}</div><div class="ov">${d.venue ? esc(d.venue.name) + " · " + esc(d.country) : d.flight ? "Flight " + esc(d.flight.from.replace(/ \(.*\)/,"")) + " → " + esc(d.flight.toCity || d.flight.to) : "Arrival · no show"}${d.next ? ` · then ${esc(d.next.distance)}` : ""}</div></div>
       <div class="os">${esc(firstTime(show) !== null ? hhmm(firstTime(show)) : "")}</div></div>`;
   }).join("")}</div>`;
   document.querySelectorAll(".dchip").forEach(c => c.classList.remove("sel"));
