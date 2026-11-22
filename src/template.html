@@ -577,7 +577,7 @@ function start(data){
   setInterval(() => { if(!$("#view").querySelector(".ov-item")) { const y = window.scrollY; renderDay(sel); window.scrollTo({top:y}); } }, 60000);
 }
 
-const EXPIRES = "2026-12-08";
+const EXPIRES = { date:"2026-12-07", mins:12*60+30 }; // 12:30 Berlin time, 7 Dec 2026
 async function retire(){
   try{ localStorage.clear(); }catch{}
   try{ (await navigator.serviceWorker?.getRegistrations() || []).forEach(r => r.unregister()); }catch{}
@@ -588,7 +588,8 @@ async function retire(){
     <p style="color:var(--muted)">The itinerary has been removed. You can delete this app from your home screen.</p></section>`;
 }
 async function init(){
-  if(nowParts().date >= EXPIRES) return retire();
+  const np = nowParts();
+  if(np.date > EXPIRES.date || (np.date === EXPIRES.date && np.mins >= EXPIRES.mins)) return retire();
   if(!PAYLOAD){ $("#lockErr").textContent = "No itinerary loaded."; return; }
   LINK = linkFrom(location.hash) || store.get(LS_LINK);
   const d = await tryStoredKey();
