@@ -1,5 +1,5 @@
 // Offline support: always try the network first so updates show up, fall back to the saved copy.
-const CACHE = "cbb-tour-8ae0d0f45a6f";
+const CACHE = "cbb-tour-19a61c5a4921";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {
