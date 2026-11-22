@@ -16,7 +16,9 @@ const ITER = 600000;
 const data = readFileSync(new URL("./private/itinerary.json", import.meta.url), "utf8");
 JSON.parse(data); // fail fast on bad JSON
 
-const salt = crypto.getRandomValues(new Uint8Array(16));
+// Salt is derived from the secret link code so the key stays the same across updates
+// (phones stay signed in after an itinerary update). The IV is fresh every build.
+const salt = new Uint8Array(createHash("sha256").update("cbb-salt:" + link).digest()).slice(0, 16);
 const iv = crypto.getRandomValues(new Uint8Array(12));
 const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
 const key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: ITER, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt"]);
