@@ -577,7 +577,18 @@ function start(data){
   setInterval(() => { if(!$("#view").querySelector(".ov-item")) { const y = window.scrollY; renderDay(sel); window.scrollTo({top:y}); } }, 60000);
 }
 
+const EXPIRES = "2026-12-08";
+async function retire(){
+  try{ localStorage.clear(); }catch{}
+  try{ (await navigator.serviceWorker?.getRegistrations() || []).forEach(r => r.unregister()); }catch{}
+  try{ (await caches.keys()).forEach(k => caches.delete(k)); }catch{}
+  document.body.innerHTML = `<section id="lock"><div class="brand"><span class="b1">Climax</span><span class="b2">Blues Band</span></div>
+    <p class="brand-sub" style="margin-bottom:12px">Evolution Tour 2026</p>
+    <p style="font-size:20px;font-weight:800;margin:0 0 8px">That's a wrap – thanks for a great tour.</p>
+    <p style="color:var(--muted)">The itinerary has been removed. You can delete this app from your home screen.</p></section>`;
+}
 async function init(){
+  if(nowParts().date >= EXPIRES) return retire();
   if(!PAYLOAD){ $("#lockErr").textContent = "No itinerary loaded."; return; }
   LINK = linkFrom(location.hash) || store.get(LS_LINK);
   const d = await tryStoredKey();
