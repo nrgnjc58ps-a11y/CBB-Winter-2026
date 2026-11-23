@@ -457,7 +457,12 @@ function renderDay(i){
     const em = k => /beer/i.test(k) ? "🍺" : /schnapps/i.test(k) ? "🥃" : "🍎";
     out.push(`<div class="card"><h2>${I.glass}Local tipple</h2>${day.local.map(x => `<div class="tip"><div class="tip-e">${em(x.kind)}</div><div><div class="tip-k">${esc(x.kind)}</div><div class="tip-n">${esc(x.name)}</div><div class="tip-d">${esc(x.note)}</div></div></div>`).join("")}</div>`);
   }
-  if(day.dinner) out.push(`<div class="card"><h2>${I.food}Dinner</h2><div>${esc(day.dinner)}</div></div>`);
+  if(day.breakfast || day.dinner){
+    const bf = day.breakfast;
+    out.push(`<div class="card"><h2>${I.food}Food</h2><dl class="kv" style="margin-top:0">
+      ${bf ? `<dt>Breakfast</dt><dd${bf.included ? "" : ' style="color:var(--amber)"'}>${esc(bf.text)}</dd>` : ""}
+      ${day.dinner ? `<dt>Dinner</dt><dd>${esc(day.dinner)}</dd>` : ""}</dl></div>`);
+  }
 
   if(day.contacts && day.contacts.length){
     out.push(`<div class="card"><h2>${I.ppl}Contacts</h2>${day.contacts.map(c => `<div class="contact">
