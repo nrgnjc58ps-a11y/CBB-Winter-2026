@@ -320,6 +320,12 @@ const showNo = i => DATA.days.slice(0, i+1).filter(isShow).length;
 const showCount = () => DATA.days.filter(isShow).length;
 const shortCity = d => d.type === "home" ? "Home" : d.city.replace(/ \(.*\)/,"");
 const headline = d => d.type === "home" ? "Flight home" : d.type === "travel" ? (d.title || "Travel day") + " · " + d.city : d.venue.name + " – " + d.city;
+function checkoutInfo(d){
+  const h = d.hotel; if(!h) return null;
+  const bus = d.next && d.next.busCall, bm = firstTime(bus), hm = firstTime(h.checkout);
+  if(bm !== null && (hm === null || bm < hm)) return { time: bus, label: `${bus} – before the bus call` + (h.checkout ? ` (hotel allows ${h.checkout})` : "") };
+  return h.checkout ? { time: h.checkout, label: h.checkout } : null;
+}
 function buildTimeline(i){
   const day = DATA.days[i], prev = DATA.days[i-1], rows = [];
   if(prev && prev.next && prev.next.busCall){
@@ -400,7 +406,7 @@ function renderDay(i){
         <div class="stat"><div class="k">Distance</div><div class="v">${esc(n.distance)}</div></div>
         <div class="stat"><div class="k">Drive</div><div class="v">~${esc(n.duration)}</div></div>
       </div>
-      <div class="sub">${prev.hotel && prev.hotel.checkout ? `Check out of ${esc(prev.hotel.name)} by <b>${esc(prev.hotel.checkout)}</b>. ` : ""}${bc !== null && d ? `Arrival around ${hhmm(bc+d)} if there are no stops.` : ""}</div>
+      <div class="sub">${(() => { const co = checkoutInfo(prev); return co ? `Check out of ${esc(prev.hotel.name)} by <b>${esc(co.time)}</b>. ` : ""; })()}${bc !== null && d ? `Arrival around ${hhmm(bc+d)} if there are no stops.` : ""}</div>
       <div class="actions">${act(mapsDir(from, to), I.nav, "Route to venue", "primary")}</div>
     </div>`);
   } else if(day.sameAsPrevious){
@@ -427,7 +433,7 @@ function renderDay(i){
   const h = day.hotel;
   if(h){
     const hq = placeStr(h.name, h, day.country);
-    const kv = [["Check-in", h.checkin], ["Check-out", h.checkout], ["Rooms", h.rooming], ["Booked under", h.reservation], ["To venue", h.distance], ["Parking", h.parking], ["Phone", h.phone]].filter(x => x[1]);
+    const kv = [["Check-in", h.checkin], ["Check-out", (checkoutInfo(day) || {}).label], ["Rooms", h.rooming], ["Booked under", h.reservation], ["To venue", h.distance], ["Parking", h.parking], ["Phone", h.phone]].filter(x => x[1]);
     out.push(`<div class="card"><h2>${I.bed}Hotel</h2>
       <div class="big">${esc(h.name)}</div>
       <a class="addr" href="${esc(mapsQ(h.name, h.address, h.postcode, day.country))}" target="_blank" rel="noopener">${esc(h.address)}${h.address && h.postcode ? ", " : ""}${esc(h.postcode)}</a>
